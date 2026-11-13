@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	errorsmod "cosmossdk.io/errors"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
@@ -95,7 +94,8 @@ func (h WasmHooks) onAckIcs20Packet(
 			sdk.NewAttribute(types.AttributeKeyError, err.Error()),
 		))
 
-		return errorsmod.Wrap(err, "Ack callback error")
+		h.wasmKeeper.Logger(cacheCtx).Error("failed to execute callback", "error", err)
+		return nil
 	}
 
 	// write the cache context only if the callback execution was successful
